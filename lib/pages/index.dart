@@ -2,6 +2,8 @@ import 'package:fast_clip/common/bar/common_bar.dart';
 import 'package:fast_clip/common/button/common_button.dart';
 import 'package:fast_clip/common/search/common_search.dart';
 import 'package:fast_clip/config/theme.dart';
+import 'package:fast_clip/pages/paste_detail.dart';
+import 'package:fast_clip/route/route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +19,8 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    PasteModel pasteModel = PasteModel(content: 'implement initState');
+    pasteList.add(pasteModel);
     WidgetsBinding.instance!.addObserver(this);
   }
 
@@ -35,7 +38,7 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
     // 由后台进入应用
     if (state == AppLifecycleState.resumed) {
       // 此时获取粘贴板数据
-      Future.delayed(Duration(milliseconds: 500)).then((_) =>getPasteData());
+      Future.delayed(Duration(milliseconds: 500)).then((_) => getPasteData());
     }
   }
 
@@ -60,13 +63,14 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
                 ),
               ),
               Expanded(
-                // color: secondBgColor,
-                child: pasteList.length > 0
-                    ? ListView(
-                        children: buildPasteList(),
-                      )
-                    : Text('No Data'),
-              )
+                  // color: secondBgColor,
+                  child: pasteList.length > 0
+                      ? ListView(
+                          children: buildPasteList(),
+                        )
+                      : Center(
+                          child: Text('No Data'),
+                        ))
             ],
           ),
         ));
@@ -108,6 +112,10 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
     Clipboard.setData(clipboardData);
   }
 
+  linkToPasteDetail(PasteModel element) {
+    routePush(new PasteDetail(element));
+  }
+
   List<Widget> buildPasteList() {
     List<Widget> pasteWidget = [];
     pasteList.forEach((element) {
@@ -115,7 +123,6 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
         padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
         child: new GestureDetector(
           onHorizontalDragEnd: (endDetails) {
-            print(element.content.toString());
             setState(() {
               element.show = !element.show;
             });
@@ -124,21 +131,34 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
             // height: 40.0,
             decoration: new BoxDecoration(
                 border: new Border(
-              bottom: BorderSide(color: Colors.amber, width: 0.5),
+              top: BorderSide(color: Color(0xff424549), width: 0.5),
+              bottom: BorderSide(color: Color(0xff424549), width: 0.5),
             )),
+
             child: new Row(
                 children: element.show
                     ? [
                         Container(
-                            width: 250,
+                            width: 170,
                             padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
                             child: Text(
                               element.content,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
                               style: TextStyle(color: primaryColor),
                             )),
                         Spacer(),
                         new CommonButton(
+                          text: 'pin',
+                          width: 60,
+                          radius: 0,
+                          onTap: () {
+                            linkToPasteDetail(element);
+                          },
+                        ),
+                        new CommonButton(
                           text: 'copy',
+                          width: 60,
                           radius: 0,
                           onTap: () {
                             setPasteData(element.content);
@@ -146,6 +166,7 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
                         ),
                         new CommonButton(
                           text: 'remove',
+                          width: 60,
                           gradient: LinearGradient(
                               colors: [Color(0xffed2856), Colors.red]),
                           radius: 0,
@@ -159,10 +180,12 @@ class _IndexState extends State<IndexPage> with WidgetsBindingObserver {
                       ]
                     : [
                         Container(
-                            width: 250,
+                            width: 230,
                             padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
                             child: Text(
                               element.content,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
                               style: TextStyle(color: primaryColor),
                             ))
                       ]),

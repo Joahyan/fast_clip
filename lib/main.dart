@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navGk,
       title: 'Flutter Blog 练习',
       theme: ThemeData(
-          scaffoldBackgroundColor: bgColor,
+          scaffoldBackgroundColor: secondBgColor,
           hintColor: Colors.grey.withOpacity(0.3),
           splashColor: Colors.transparent,
           canvasColor: Colors.transparent
